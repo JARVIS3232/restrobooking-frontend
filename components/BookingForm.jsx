@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import AvailableSlots from "@/components/AvailableSlots";
+import { validateForm } from "@/lib/utils";
 const BookingForm = ({ onSubmit }) => {
   const [formData, setFormData] = useState({
     date: "",
@@ -9,6 +10,7 @@ const BookingForm = ({ onSubmit }) => {
     name: "",
     contact: "",
   });
+  const [errors, setErrors] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState("");
@@ -48,7 +50,12 @@ const BookingForm = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    const errors = validateForm(formData);
+    if (Object.keys(errors).length > 0) {
+      setErrors(errors);
+    } else {
+      onSubmit(formData);
+    }
   };
 
   return (
@@ -89,10 +96,11 @@ const BookingForm = ({ onSubmit }) => {
             name="guests"
             value={formData.guests}
             onChange={handleChange}
-            required
-            min="1"
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <span className="mt-1 text-sm text-center font-semibold text-white bg-red-500 rounded-md">
+            {errors?.guests}
+          </span>
         </div>
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -105,6 +113,9 @@ const BookingForm = ({ onSubmit }) => {
             placeholder="Enter your full name"
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <span className="mt-1 text-sm text-center font-semibold text-white bg-red-500 rounded-md">
+            {errors?.name}
+          </span>
         </div>
         <div className="flex flex-col">
           <label className="text-sm font-medium text-gray-700 mb-1">
@@ -119,6 +130,9 @@ const BookingForm = ({ onSubmit }) => {
             placeholder="Enter your phone or email"
             className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+          <span className="mt-1 text-sm text-center font-semibold text-white bg-red-500 rounded-md">
+            {errors?.contact}
+          </span>
         </div>
         <button
           type="submit"
